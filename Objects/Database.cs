@@ -1,7 +1,7 @@
 using System.Data;
 using System.Data.SqlClient;
 
-namespace Librarian
+namespace Librarian.Objects
 {
   public class DB
   {
