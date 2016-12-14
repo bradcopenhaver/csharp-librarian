@@ -55,7 +55,7 @@ namespace Librarian.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("DELETE FROM books;", conn);
+      SqlCommand cmd = new SqlCommand("DELETE FROM authors_books; DELETE FROM books;", conn);
       cmd.ExecuteNonQuery();
       if(conn != null) conn.Close();
     }
@@ -134,14 +134,14 @@ namespace Librarian.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("DELETE FROM books WHERE id = @bookId;", conn);
+      SqlCommand cmd = new SqlCommand("DELETE FROM authors_books WHERE book_id = @bookId; DELETE FROM books WHERE id = @bookId;", conn);
       cmd.Parameters.AddWithValue("@bookId", this.id);
 
       cmd.ExecuteNonQuery();
       if(conn!=null) conn.Close();
     }
 
-    public void Update(string propertyToChange, string changeValue)
+    public void UpdateProperty(string propertyToChange, string changeValue)
     {
       SqlConnection conn = DB.Connection();
       conn.Open();
@@ -178,12 +178,12 @@ namespace Librarian.Objects
       if(conn!=null) conn.Close();
     }
 
-    public void Update(string inputTitle, int inputCopies, int inputCheckedOut, int inputCheckedIn)
+    public void UpdateAll(string inputTitle, string inputCopies, string inputCheckedIn, string inputCheckedOut)
     {
-      string newTitle = (inputTitle != null) ? inputTitle : this.title;
-      int newCopies = (inputCopies != null) ? inputCopies : this.copies;
-      int newCheckedIn = (inputCheckedIn != null) ? inputCheckedIn : this.checkedIn;
-      int newCheckedOut = (inputCheckedOut != null) ? inputCheckedOut : this.checkedOut;
+      string newTitle = (inputTitle != "") ? inputTitle : this.title;
+      int newCopies = (inputCopies != "") ? int.Parse(inputCopies) : this.copies;
+      int newCheckedIn = (inputCheckedIn != "") ? int.Parse(inputCheckedIn) : this.checkedIn;
+      int newCheckedOut = (inputCheckedOut != "") ? int.Parse(inputCheckedOut) : this.checkedOut;
 
       this.title = newTitle;
       this.copies = newCopies;
@@ -201,9 +201,58 @@ namespace Librarian.Objects
       cmd.Parameters.AddWithValue("@id", this.id);
 
       cmd.ExecuteNonQuery();
-      if(conn!=null) conn.Close();
+      if(conn != null) conn.Close();
     }
 
+    public void AddAuthor(int authorId)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("INSERT INTO authors_books (author_id, book_id) VALUES (@authorId, @bookId);", conn);
+      cmd.Parameters.AddWithValue("@authorId", authorId);
+      cmd.Parameters.AddWithValue("@bookId", this.id);
+
+      cmd.ExecuteNonQuery();
+      if (conn != null) conn.Close();
+    }
+
+    public void RemoveAuthor(int authorId)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("DELETE FROM authors_books WHERE author_id = @authorId AND book_id = @bookId;", conn);
+      cmd.Parameters.AddWithValue("@authorId", authorId);
+      cmd.Parameters.AddWithValue("@bookId", this.id);
+
+      cmd.ExecuteNonQuery();
+      if (conn != null) conn.Close();
+    }
+
+
+    public List<Author> GetAuthors()
+    {
+      List<Author> bookAuthors = new List<Author> {};
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT authors.* FROM books JOIN authors_books ON (books.id = authors_books.book_id) JOIN authors ON (authors_books.author_id = authors.id) WHERE books.id = @bookId;", conn);
+      cmd.Parameters.AddWithValue("@bookId", this.id);
+
+      SqlDataReader rdr = cmd.ExecuteReader();
+
+      while(rdr.Read())
+      {
+        int authorId = rdr.GetInt32(0);
+        string authorName = rdr.GetString(1);
+        bookAuthors.Add(new Author(authorName, authorId));
+      }
+      if (rdr != null) rdr.Close();
+      if(conn != null) conn.Close();
+
+      return bookAuthors;
+    }
 
   }
 }
