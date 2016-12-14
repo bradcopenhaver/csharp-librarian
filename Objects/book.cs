@@ -9,26 +9,26 @@ namespace Librarian.Objects
     public int id {get; set;}
     public string title {get; set;}
     public int copies {get; set;}
-    public int checkedOut {get; set;}
     public int checkedIn {get; set;}
+    public int checkedOut {get; set;}
 
     //Initial constructor
     public Book(string newTitle, int newCopies)
     {
       title = newTitle;
       copies = newCopies;
-      checkedOut = 0;
       checkedIn = newCopies;
+      checkedOut = 0;
       id = 0;
     }
 
     //Re-constructor
-    public Book(string newTitle, int newCopies, int newCheckedOut, int newCheckedIn, int newId)
+    public Book(string newTitle, int newCopies, int newCheckedIn, int newCheckedOut, int newId)
     {
       title = newTitle;
       copies = newCopies;
-      checkedOut = newCheckedOut;
       checkedIn = newCheckedIn;
+      checkedOut = newCheckedOut;
       id = newId;
     }
 
@@ -39,15 +39,25 @@ namespace Librarian.Objects
         return false;
       }
       else
-      (
+      {
         Book newBook = (Book) otherBook;
-        bool idEquality = this.id == newbook.id;
-        bool titleEquality = this.title == newbook.title;
-        bool copiesEquality = this.copies == newbook.copies;
-        bool checkedOutEquality = this.checkedOut == newbook.checkedOut;
-        bool checkedInEquality = this.checkedIn == newbook.checkedIn;
+        bool idEquality = this.id == newBook.id;
+        bool titleEquality = this.title == newBook.title;
+        bool copiesEquality = this.copies == newBook.copies;
+        bool checkedInEquality = this.checkedIn == newBook.checkedIn;
+        bool checkedOutEquality = this.checkedOut == newBook.checkedOut;
         return (idEquality && titleEquality && copiesEquality && checkedOutEquality && checkedInEquality);
-      )
+      }
+    }
+
+    public static void DeleteAll()
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("DELETE FROM books;", conn);
+      cmd.ExecuteNonQuery();
+      if(conn != null) conn.Close();
     }
 
     public void Save()
@@ -55,11 +65,11 @@ namespace Librarian.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("INSERT INTO books (title, copies, checked_out, checked_in) OUTPUT INSERTED.id VALUES (@title, @copies, @checked_out, @checked_in);", conn);
+      SqlCommand cmd = new SqlCommand("INSERT INTO books (title, copies, checked_in, checked_out) OUTPUT INSERTED.id VALUES (@title, @copies, @checked_in, @checked_out);", conn);
       cmd.Parameters.AddWithValue("@title", this.title);
       cmd.Parameters.AddWithValue("@copies", this.copies);
-      cmd.Parameters.AddWithValue("@checked_out", this.checkedOut);
       cmd.Parameters.AddWithValue("@checked_in", this.checkedIn);
+      cmd.Parameters.AddWithValue("@checked_out", this.checkedOut);
       SqlDataReader rdr = cmd.ExecuteReader();
       while(rdr.Read())
       {
@@ -69,7 +79,7 @@ namespace Librarian.Objects
       if(conn!=null) conn.Close();
     }
 
-    public List<Book> GetAll()
+    public static List<Book> GetAll()
     {
       List<Book> allBooks = new List<Book>{};
       SqlConnection conn = DB.Connection();
@@ -82,10 +92,10 @@ namespace Librarian.Objects
         int idNew = rdr.GetInt32(0);
         string titleNew = rdr.GetString(1);
         int copiesNew = rdr.GetInt32(2);
-        int checkedOutNew = rdr.GetInt32(3);
-        int checkedInNew = rdr.GetInt32(4);
+        int checkedInNew = rdr.GetInt32(3);
+        int checkedOutNew = rdr.GetInt32(4);
 
-        allBooks.Add(new Book(titleNew, copiesNew, checkedOutNew, checkedInNew, idNew));
+        allBooks.Add(new Book(titleNew, copiesNew, checkedInNew, checkedOutNew, idNew));
       }
       if(rdr!=null) rdr.Close();
       if(conn!=null) conn.Close();
@@ -103,21 +113,97 @@ namespace Librarian.Objects
       int idNew = 0;
       string titleNew = "";
       int copiesNew = 0;
-      int checkedOutNew = 0;
       int checkedInNew = 0;
+      int checkedOutNew = 0;
       while(rdr.Read())
       {
         idNew = rdr.GetInt32(0);
         titleNew = rdr.GetString(1);
         copiesNew = rdr.GetInt32(2);
-        checkedOutNew = rdr.GetInt32(3);
-        checkedInNew = rdr.GetInt32(4);
-
+        checkedInNew = rdr.GetInt32(3);
+        checkedOutNew = rdr.GetInt32(4);
       }
-      Book foundBook = new Book(titleNew, copiesNew, checkedOutNew, checkedInNew, idNew);
+      Book foundBook = new Book(titleNew, copiesNew, checkedInNew, checkedOutNew, idNew);
       if(rdr!=null) rdr.Close();
       if(conn!=null) conn.Close();
       return foundBook;
     }
+
+    public void Delete()
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("DELETE FROM books WHERE id = @bookId;", conn);
+      cmd.Parameters.AddWithValue("@bookId", this.id);
+
+      cmd.ExecuteNonQuery();
+      if(conn!=null) conn.Close();
+    }
+
+    public void Update(string propertyToChange, string changeValue)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand();
+      cmd.Connection = conn;
+
+      switch (propertyToChange)
+      {
+        case "title":
+            cmd.CommandText = "UPDATE books SET title = @newValue WHERE id = @id";
+            this.title = changeValue;
+            break;
+        case "copies":
+            cmd.CommandText = "UPDATE books SET copies = @newValue WHERE id = @id";
+            this.copies = int.Parse(changeValue);
+            break;
+        case "checked_out":
+            cmd.CommandText = "UPDATE books SET checked_out = @newValue WHERE id = @id";
+            this.checkedOut = int.Parse(changeValue);
+            break;
+        case "checked_in":
+            cmd.CommandText = "UPDATE books SET checked_in = @newValue WHERE id = @id";
+            this.checkedIn = int.Parse(changeValue);
+            break;
+        default:
+            break;
+      }
+
+      cmd.Parameters.AddWithValue("@newValue", changeValue);
+      cmd.Parameters.AddWithValue("@id", this.id);
+
+      cmd.ExecuteNonQuery();
+      if(conn!=null) conn.Close();
+    }
+
+    public void Update(string inputTitle, int inputCopies, int inputCheckedOut, int inputCheckedIn)
+    {
+      string newTitle = (inputTitle != null) ? inputTitle : this.title;
+      int newCopies = (inputCopies != null) ? inputCopies : this.copies;
+      int newCheckedIn = (inputCheckedIn != null) ? inputCheckedIn : this.checkedIn;
+      int newCheckedOut = (inputCheckedOut != null) ? inputCheckedOut : this.checkedOut;
+
+      this.title = newTitle;
+      this.copies = newCopies;
+      this.checkedIn = newCheckedIn;
+      this.checkedOut = newCheckedOut;
+
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("UPDATE books SET title = @newTitle, copies = @newCopies, checked_in = @newCheckedIn, checked_out = @newCheckedOut WHERE id = @id", conn);
+      cmd.Parameters.AddWithValue("@newTitle", newTitle);
+      cmd.Parameters.AddWithValue("@newCopies", newCopies);
+      cmd.Parameters.AddWithValue("@newCheckedIn", newCheckedIn);
+      cmd.Parameters.AddWithValue("@newCheckedOut", newCheckedOut);
+      cmd.Parameters.AddWithValue("@id", this.id);
+
+      cmd.ExecuteNonQuery();
+      if(conn!=null) conn.Close();
+    }
+
+
   }
 }
