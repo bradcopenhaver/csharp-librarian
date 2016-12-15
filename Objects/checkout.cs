@@ -49,6 +49,25 @@ namespace Librarian.Objects
       return allCheckouts;
     }
 
+    public void Save()
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("INSERT INTO checkouts (book_id, member_id, due_date, returned) OUTPUT INSERTED.id VALUES (@bookId, @memberId, @dueDate, @returned);", conn);
+      cmd.Parameters.AddWithValue("@bookId", this.bookId);
+      cmd.Parameters.AddWithValue("@memberId", this.memberId);
+      cmd.Parameters.AddWithValue("@dueDate", this.dueDate);
+      cmd.Parameters.AddWithValue("@returned", this.returned);
+      SqlDataReader rdr = cmd.ExecuteReader();
+      while(rdr.Read())
+      {
+        this.id = rdr.GetInt32(0);
+      }
+      if(rdr!=null) rdr.Close();
+      if(conn!=null) conn.Close();
+    }
+
     public string GetBookTitle()
     {
       string title = "";

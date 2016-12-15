@@ -6,14 +6,14 @@
     <h3>Add Book to Inventory</h3>
     <hr>
     <h4>Enter Book Details:</h4>
-      <form action="book/new/step2" method="post">
+      <form action="/book/new/step2" method="post">
         <input name="authorId" type="hidden" value="@Model">
         <label for="bookTitle">Title:</label>
         <input name="bookTitle" type="text" required>
         <label for="bookCopies">Number of Copies:</label>
         <input name="bookCopies" type="number" required>
         <button type="submit">Add book</button>
-      </form>      
+      </form>
     <hr>
     <p><a href="/librarian">Librarian home</a></p>
     <p><a href="/">Home Page</a></p>

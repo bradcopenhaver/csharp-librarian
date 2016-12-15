@@ -8,18 +8,37 @@
     <h4>Checkouts for @Model["member"].name:</h4>
     <ul>
       @if (Model["checkouts"].Count > 0)
-    {
-      @foreach (var checkout in Model["checkouts"])
       {
-        <li>@checkout.GetBookTitle(), Due @checkout.dueDate</li>
+        @foreach (var checkout in Model["checkouts"])
+        {
+          <li>@checkout.GetBookTitle(), Due @checkout.dueDate</li>
+        }
       }
-    }
-    else
-    {
-      <p>@Model["member"].name hasn't checked out any books yet.</p>
-    }
+      else
+      {
+        <p>@Model["member"].name hasn't checked out any books yet.</p>
+      }
     </ul>
     <hr>
+    @if (Model["books"].Count > 0)
+    {
+      <h4>Check out a book</h4>
+      <form action="/book/checkout" method="post">
+        <input type="hidden" name="memberId" value="@Model["member"].id">
+        <label for="bookId">Available books:</label>
+        <select name="bookId">
+          @foreach(var book in Model["books"])
+          {
+            @if(book.checkedIn > 0)
+            {
+              <option value="@book.id">@book.title by @book.GetAuthorNames()</option>
+            }
+          }
+        </select>
+        <button type="submit" class="btn btn-info">Checkout book</button>
+      </form>
+    }
+
     <p><a href="/">Home Page</a></p>
   </div>
 </div>

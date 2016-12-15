@@ -85,7 +85,7 @@ namespace Librarian.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT * FROM books;", conn);
+      SqlCommand cmd = new SqlCommand("SELECT * FROM books ORDER BY title;", conn);
       SqlDataReader rdr = cmd.ExecuteReader();
       while(rdr.Read())
       {
@@ -254,5 +254,25 @@ namespace Librarian.Objects
       return bookAuthors;
     }
 
+    public string GetAuthorNames()
+    {
+      string authorNames = "";
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT authors.name FROM books JOIN authors_books ON (books.id = authors_books.book_id) JOIN authors ON (authors_books.author_id = authors.id) WHERE books.id = @bookId;", conn);
+      cmd.Parameters.AddWithValue("@bookId", this.id);
+
+      SqlDataReader rdr = cmd.ExecuteReader();
+
+      while(rdr.Read())
+      {
+        authorNames = authorNames + " " + rdr.GetString(0);
+      }
+      if (rdr != null) rdr.Close();
+      if(conn != null) conn.Close();
+
+      return authorNames;
+    }
   }
 }

@@ -1,0 +1,18 @@
+@{
+  Layout="Shared/_Layout.cshtml";
+}
+<div class="row">
+  <div class="col-md-12">
+    <h3>Book Details</h3>
+    <hr>
+    <h4>Title</h4>
+    <p>@Model.title</p>
+    <h4>Authors</h4>
+    <p>@Model.GetAuthorNames()</p>
+    <h4>Copies</h4>
+    <p>@Model.copies total. @Model.checkedIn in stock, @Model.checkedOut checked out.</p>
+    <hr>
+    <p><a href="/librarian">Librarian home</a></p>
+    <p><a href="/">Home Page</a></p>
+  </div>
+</div>

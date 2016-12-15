@@ -37,7 +37,16 @@
     <h4>View Book Records</h4>
     @if(Model["books"].Count > 0)
     {
-
+      <form action="/book" method="get">
+      <label for="bookId">Choose a book:</label>
+      <select name="bookId">
+      @foreach(var book in Model["books"])
+      {
+        <option value="@book.id">@book.title by @book.GetAuthorNames()</option>
+      }
+      </select>
+      <button type="submit" class="btn btn-info">View book details</button>
+    </form>
     }
     else
     {

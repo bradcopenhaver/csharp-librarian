@@ -120,7 +120,7 @@ namespace Librarian.Objects
       SqlCommand cmd = new SqlCommand("INSERT INTO checkouts (member_id, book_id, due_date) VALUES (@memberId, @bookId, @dueDate); UPDATE books SET checked_in = @checkedIn, checked_out = @checkedOut WHERE id = @bookId;", conn);
       cmd.Parameters.AddWithValue("@memberId", this.id);
       cmd.Parameters.AddWithValue("@bookId", bookId);
-      cmd.Parameters.AddWithValue("@due_date", DateTime.Today.AddDays(14));
+      cmd.Parameters.AddWithValue("@dueDate", DateTime.Today.AddDays(14));
       cmd.Parameters.AddWithValue("@checkedIn", targetBook.checkedIn - 1);
       cmd.Parameters.AddWithValue("@checkedOut", targetBook.checkedOut + 1);
 
