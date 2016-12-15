@@ -62,7 +62,7 @@ namespace Librarian.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT * FROM authors;", conn);
+      SqlCommand cmd = new SqlCommand("SELECT * FROM authors ORDER BY name ASC;", conn);
       SqlDataReader rdr = cmd.ExecuteReader();
       while(rdr.Read())
       {

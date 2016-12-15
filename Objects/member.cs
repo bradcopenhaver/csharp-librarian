@@ -63,7 +63,7 @@ namespace Librarian.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT * FROM members;", conn);
+      SqlCommand cmd = new SqlCommand("SELECT * FROM members ORDER BY name ASC;", conn);
       SqlDataReader rdr = cmd.ExecuteReader();
       while(rdr.Read())
       {
@@ -117,7 +117,7 @@ namespace Librarian.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("INSERT INTO checkouts (member_id, book_id, due_date) VALUES (@memberId, @bookId, @dueDate; UPDATE books SET checked_in = @checkedIn, checked_out = @checkedOut WHERE id = @bookId;)", conn);
+      SqlCommand cmd = new SqlCommand("INSERT INTO checkouts (member_id, book_id, due_date) VALUES (@memberId, @bookId, @dueDate); UPDATE books SET checked_in = @checkedIn, checked_out = @checkedOut WHERE id = @bookId;", conn);
       cmd.Parameters.AddWithValue("@memberId", this.id);
       cmd.Parameters.AddWithValue("@bookId", bookId);
       cmd.Parameters.AddWithValue("@due_date", DateTime.Today.AddDays(14));
@@ -164,7 +164,7 @@ namespace Librarian.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT * FROM checkouts WHERE member_id = @memberId;", conn);
+      SqlCommand cmd = new SqlCommand("SELECT * FROM checkouts WHERE member_id = @memberId ORDER BY due_date DESC;", conn);
       cmd.Parameters.AddWithValue("@memberId", this.id);
       SqlDataReader rdr = cmd.ExecuteReader();
       while(rdr.Read())
@@ -179,7 +179,7 @@ namespace Librarian.Objects
       }
       if (rdr != null) rdr.Close();
       if (conn != null) conn.Close();
-      return allCheckouts();
+      return allCheckouts;
     }
   }
 }

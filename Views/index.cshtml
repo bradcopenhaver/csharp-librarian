@@ -1,3 +1,35 @@
 @{
   Layout="Shared/_Layout.cshtml";
 }
+<div class="row">
+  <div class="col-md-12">
+    <h3>Welcome to Local Public Library!</h3>
+    <h4>Member log in:</h4>
+    @if(Model.Count > 0)
+    {
+      <form action="/member" method="post">
+      <label for="memberName">Your Name:</label>
+      <select name="memberId">
+      @foreach(var member in @Model)
+      {
+        <option value = @member.id>@member.name</option>
+      }
+      </select>
+      <label for="memberPassword">Password:</label>
+      <input type="password" name="memberPassword">
+      <button type="submit" class="btn btn-info">Log in</button>
+      </form>
+    }
+    else
+    {
+      <p>No current members. Please become a member!</p>
+    }
+    <p>Don't see your name? <a href="/member/new">Become a member!</a></p>
+    <hr>
+    <form action="/librarian" method="get">
+      <label for="adminPassword">Librarian password:</label>
+      <input type="password" name="adminPassword">
+      <button type="submit" class="btn btn-info">Log in as librarian</button>
+    </form>
+  </div>
+</div>
