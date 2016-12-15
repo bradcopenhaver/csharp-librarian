@@ -157,5 +157,29 @@ namespace Librarian.Objects
       cmd.ExecuteNonQuery();
       if (conn != null) conn.Close();
     }
+
+    public List<Checkout> GetCheckouts()
+    {
+      List<Checkout> allCheckouts = new List<Checkout>{};
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT * FROM checkouts WHERE member_id = @memberId;", conn);
+      cmd.Parameters.AddWithValue("@memberId", this.id);
+      SqlDataReader rdr = cmd.ExecuteReader();
+      while(rdr.Read())
+      {
+        int checkoutId = rdr.GetInt32(0);
+        int checkoutBookId = rdr.GetInt32(1);
+        int checkoutMemberId = rdr.GetInt32(2);
+        DateTime checkoutDueDate = rdr.GetDateTime(3);
+        bool checkoutReturned = rdr.GetBoolean(4);
+
+        allCheckouts.Add(new Checkout(checkoutBookId, checkoutMemberId, checkoutDueDate, checkoutReturned, checkoutId));
+      }
+      if (rdr != null) rdr.Close();
+      if (conn != null) conn.Close();
+      return allCheckouts();
+    }
   }
 }
