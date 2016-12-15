@@ -1,0 +1,60 @@
+@{
+  Layout="Shared/_Layout.cshtml";
+}
+<div class="row">
+  <div class="col-md-12">
+    <h3>Library Admin</h3>
+    <hr>
+    <h4>Overdue Books</h4>
+    @if(Model["overdues"].Count > 0)
+    {
+
+    }
+    else
+    {
+      <p>No books are overdue right now.</p>
+    }
+    <hr>
+    <h4>View Member Records</h4>
+    @if(Model["members"].Count > 0)
+    {
+      <form action="/member" method="get">
+        <label for="memberId">Choose a member:</label>
+        <select name="memberId">
+        @foreach(var member in Model["members"])
+        {
+          <option value="@member.id">@member.name</option>
+        }
+        </select>
+        <button type="submit" class="btn btn-info">View member details</button>
+      </form>
+    }
+    else
+    {
+      <p>No members exist</p>
+    }
+    <hr>
+    <h4>View Book Records</h4>
+    @if(Model["books"].Count > 0)
+    {
+
+    }
+    else
+    {
+      <p>The library has no books.</p>
+    }
+    <p><a href="/book/new/step1">Add a new book to inventory</a></p>
+    <hr>
+    <h4>View Author Records</h4>
+    @if(Model["authors"].Count > 0)
+    {
+
+    }
+    else
+    {
+      <p>No authors on record.</p>
+    }
+    <hr>
+    <p><a href="/">Log out</a></p>
+  </div>
+</div>

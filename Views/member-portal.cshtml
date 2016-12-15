@@ -1,13 +1,23 @@
+@{
+  Layout="Shared/_Layout.cshtml";
+}
 <div class="row">
   <div class="col-md-12">
     <h3>Welcome, @Model["member"].name.</h3>
     <hr>
-    <h4>Your checkouts:</h4>
+    <h4>Checkouts for @Model["member"].name:</h4>
     <ul>
+      @if (Model["checkouts"].Count > 0)
+    {
       @foreach (var checkout in Model["checkouts"])
       {
-        <li @if(checkout.dueDate < Model["today"]) {class="overdue"}>@checkout.GetBookTitle(), Due @checkout.dueDate</li>
+        <li>@checkout.GetBookTitle(), Due @checkout.dueDate</li>
       }
+    }
+    else
+    {
+      <p>@Model["member"].name hasn't checked out any books yet.</p>
+    }
     </ul>
     <hr>
     <p><a href="/">Home Page</a></p>

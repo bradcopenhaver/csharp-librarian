@@ -1,0 +1,32 @@
+@{
+  Layout="Shared/_Layout.cshtml";
+}
+<div class="row">
+  <div class="col-md-12">
+    <h3>Add Book to Inventory</h3>
+    <hr>
+    @if(Model.Count > 0)
+    {
+      <h4>Select the book's author:</h4>
+      <form action="book/new/step2" method="get">
+        <label for="authorId">Select the book's author:</label>
+        <select name="authorId">
+        @foreach(var author in Model)
+        {
+          <option value=@author.id>@author.name</option>
+        }
+        </select>
+        <button type="submit">Select author</button>
+      </form>
+      <p>Is the author not on this list? Add them using the link below.</p>
+    }
+    else
+    {
+      <p>No authors on record.</p>
+    }
+    <p><a href="/author/new">Add an author</a></p>
+    <hr>
+    <p><a href="/librarian">Librarian home</a></p>
+    <p><a href="/">Home Page</a></p>
+  </div>
+</div>

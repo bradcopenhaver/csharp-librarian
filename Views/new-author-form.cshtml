@@ -1,0 +1,15 @@
+@{
+  Layout="Shared/_Layout.cshtml";
+}
+<div class="row">
+  <div class="col-md-12">
+    <h3>Add an Author Record</h3>
+    <form action="/author/new" method="post">
+      <label for="authorName">Author name:</label>
+      <input type="text" name="authorName" required>
+      <button type="submit">Add Author</button>
+    </form>
+    <hr>
+    <p><a href="/">Home Page</a></p>
+  </div>
+</div>
