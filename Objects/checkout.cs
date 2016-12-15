@@ -68,6 +68,33 @@ namespace Librarian.Objects
       if(conn!=null) conn.Close();
     }
 
+    public static Checkout Find(int id)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT * FROM checkouts WHERE id = @checkoutId;", conn);
+      cmd.Parameters.AddWithValue("@checkoutId", id);
+      SqlDataReader rdr = cmd.ExecuteReader();
+      int idNew = 0;
+      int bookIdNew = 0;
+      int memberIdNew = 0;
+      DateTime dueDateNew = DateTime.Today;
+      bool returnedNew = false;
+      while(rdr.Read())
+      {
+        idNew = rdr.GetInt32(0);
+        bookIdNew = rdr.GetInt32(1);
+        memberIdNew = rdr.GetInt32(2);
+        dueDateNew = rdr.GetDateTime(3);
+        returnedNew = rdr.GetBoolean(4);
+      }
+      Checkout foundCheckout = new Checkout(bookIdNew, memberIdNew, dueDateNew, returnedNew, idNew);
+      if(rdr!=null) rdr.Close();
+      if(conn!=null) conn.Close();
+      return foundCheckout;
+    }
+
     public string GetBookTitle()
     {
       string title = "";
@@ -84,6 +111,24 @@ namespace Librarian.Objects
       if (rdr != null) rdr.Close();
       if (conn != null) conn.Close();
       return title;
+    }
+
+    public string GetMemberName()
+    {
+      string memberName = "";
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT name FROM members WHERE id = @memberId;", conn);
+      cmd.Parameters.AddWithValue("@memberId", this.memberId);
+      SqlDataReader rdr = cmd.ExecuteReader();
+      while(rdr.Read())
+      {
+        memberName = rdr.GetString(0);
+      }
+      if (rdr != null) rdr.Close();
+      if (conn != null) conn.Close();
+      return memberName;
     }
 
     public static List<Checkout> GetOverdue()

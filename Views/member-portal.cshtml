@@ -5,20 +5,37 @@
   <div class="col-md-12">
     <h3>Welcome, @Model["member"].name.</h3>
     <hr>
-    <h4>Checkouts for @Model["member"].name:</h4>
-    <ul>
+    <h4>Checkout History for @Model["member"].name:</h4>
       @if (Model["checkouts"].Count > 0)
       {
+        <ul>
         @foreach (var checkout in Model["checkouts"])
         {
-          <li>@checkout.GetBookTitle(), Due @checkout.dueDate</li>
+          <li>@checkout.GetBookTitle(), due @checkout.dueDate.Date @(checkout.returned ? " RETURNED" : "")</li>
         }
+        </ul>
+        <hr>
+        <h4>Return a book</h4>
+        <form action="/book/return" method="post">
+          <input type="hidden" name="_method" value="PATCH">
+          <input type="hidden" name="memberId" value="@Model["member"].id">
+          <label for="checkoutId">Your books:</label>
+          <select name="checkoutId">
+            @foreach (var checkout in Model["checkouts"])
+            {
+              @if(!checkout.returned)
+              {
+                <option value="@checkout.id">@checkout.GetBookTitle(), due @checkout.dueDate.Date</option>
+              }
+            }
+          </select>
+          <button type="submit" class="btn btn-info">Return book</button>
+        </form>
       }
       else
       {
         <p>@Model["member"].name hasn't checked out any books yet.</p>
       }
-    </ul>
     <hr>
     @if (Model["books"].Count > 0)
     {

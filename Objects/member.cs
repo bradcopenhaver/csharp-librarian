@@ -128,16 +128,17 @@ namespace Librarian.Objects
       if (conn != null) conn.Close();
     }
 
-    public void ReturnBook(int bookId)
+    public void ReturnBook(int checkoutId)
     {
-      Book targetBook = Book.Find(bookId);
+      Checkout targetCheckout = Checkout.Find(checkoutId);
+      Book targetBook = Book.Find(targetCheckout.bookId);
 
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("UPDATE checkouts SET returned = 1 WHERE member_id = @memberId AND book_id = @bookId; UPDATE books SET checked_in = @checkedIn, checked_out = @checkedOut WHERE id = @bookId;", conn);
-      cmd.Parameters.AddWithValue("@memberId", this.id);
-      cmd.Parameters.AddWithValue("@bookId", bookId);
+      SqlCommand cmd = new SqlCommand("UPDATE checkouts SET returned = 1 WHERE id = @checkoutId; UPDATE books SET checked_in = @checkedIn, checked_out = @checkedOut WHERE id = @bookId;", conn);
+      cmd.Parameters.AddWithValue("@checkoutId", targetCheckout.id);
+      cmd.Parameters.AddWithValue("@bookId", targetCheckout.bookId);
       cmd.Parameters.AddWithValue("@checkedIn", targetBook.checkedIn + 1);
       cmd.Parameters.AddWithValue("@checkedOut", targetBook.checkedOut - 1);
 
@@ -164,7 +165,7 @@ namespace Librarian.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT * FROM checkouts WHERE member_id = @memberId ORDER BY due_date DESC;", conn);
+      SqlCommand cmd = new SqlCommand("SELECT * FROM checkouts WHERE member_id = @memberId ORDER BY returned, due_date DESC;", conn);
       cmd.Parameters.AddWithValue("@memberId", this.id);
       SqlDataReader rdr = cmd.ExecuteReader();
       while(rdr.Read())

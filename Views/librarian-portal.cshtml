@@ -8,7 +8,12 @@
     <h4>Overdue Books</h4>
     @if(Model["overdues"].Count > 0)
     {
-
+      <ul>
+      @foreach(var checkout in Model["overdues"])
+      {
+        <li>@checkout.GetBookTitle() checked out to @checkout.GetMemberName(), due on @checkout.dueDate.Date</li>
+      }
+      </ul>
     }
     else
     {

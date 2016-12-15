@@ -104,6 +104,18 @@ namespace Librarian
         model.Add("today", DateTime.Today);
         return View["member-portal.cshtml", model];
       };
+      Patch["/book/return"] = _ => {
+        Member currentMember = Member.Find(Request.Form["memberId"]);
+        currentMember.ReturnBook(int.Parse(Request.Form["checkoutId"]));
+        Dictionary<string, object> model = new Dictionary<string, object>();
+        List<Checkout> checkouts = currentMember.GetCheckouts();
+        List<Book> allBooks = Book.GetAll();
+        model.Add("books", allBooks);
+        model.Add("member", currentMember);
+        model.Add("checkouts", checkouts);
+        model.Add("today", DateTime.Today);
+        return View["member-portal.cshtml", model];
+      };
     }
   }
 }
