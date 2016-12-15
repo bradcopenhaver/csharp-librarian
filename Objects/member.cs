@@ -112,6 +112,8 @@ namespace Librarian.Objects
 
     public void CheckoutBook(int bookId)
     {
+      Book targetBook = Book.Find(bookId);
+
       SqlConnection conn = DB.Connection();
       conn.Open();
 
@@ -143,5 +145,17 @@ namespace Librarian.Objects
       if (conn != null) conn.Close();
     }
 
+    public void Update(string newName)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("UPDATE members SET name = @newName WHERE id = @memberId;", conn);
+      cmd.Parameters.AddWithValue("@newName", newName);
+      cmd.Parameters.AddWithValue("@memberId", this.id);
+
+      cmd.ExecuteNonQuery();
+      if (conn != null) conn.Close();
+    }
   }
 }
