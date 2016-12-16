@@ -11,7 +11,7 @@
         <ul>
         @foreach (var checkout in Model["checkouts"])
         {
-          <li>@checkout.GetBookTitle(), due @checkout.dueDate.Date @(checkout.returned ? " RETURNED" : "")</li>
+          <li @((checkout.returned || checkout.dueDate >= DateTime.Today) ? "" : "class=overdue")>@checkout.GetBookTitle(), due @checkout.dueDate.Date @(checkout.returned ? " RETURNED" : "")</li>
         }
         </ul>
         <hr>
